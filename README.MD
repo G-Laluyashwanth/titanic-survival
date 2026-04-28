@@ -6,21 +6,23 @@ Binary classification project predicting passenger survival on the Titanic.
 
 ## Project Structure
 
+```
 titanic/
 ├── data/
-│   ├── raw/                # Kaggle data (download from competition page)
-│   └── processed/          # Cleaned/transformed data
+│   ├── raw/
+│   └── processed/
 ├── notebooks/
-│   └── pipeline.ipynb      # Exploratory work
+│   └── pipeline.ipynb
 ├── src/
-│   ├── data.py             # Data loading and splitting
-│   ├── pipeline.py         # build_pipeline() — sklearn Pipeline factory
-│   ├── train.py            # End-to-end training + model persistence
-│   └── predict.py          # Generate Kaggle submission from saved model
-├── weights/                # Trained models (gitignored)
+│   ├── data.py
+│   ├── pipeline.py
+│   ├── train.py
+│   └── predict.py
+├── weights/
 ├── submission.csv
 ├── requirements.txt
 └── README.md
+```
 
 ## Setup
 
