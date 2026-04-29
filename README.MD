@@ -7,18 +7,19 @@ Binary classification project predicting passenger survival on the Titanic.
 ## Project Structure
 
 ```
-titanic/
+titanic-survival/
 ├── data/
-│   ├── raw/
-│   └── processed/
+│   ├── raw/                # Kaggle data (download from competition page)
+│   └── processed/          # Cleaned/transformed data
 ├── notebooks/
-│   └── pipeline.ipynb
+│   ├── 01-explore.ipynb         # EDA
+│   └── 02-logistic-regression.ipynb   # Logistic Regression experiments
 ├── src/
-│   ├── data.py
-│   ├── pipeline.py
-│   ├── train.py
-│   └── predict.py
-├── weights/
+│   ├── data.py             # Data loading + train/val splitting
+│   ├── pipeline.py         # build_pipeline() — supports multiple models
+│   ├── train.py            # End-to-end training, with --model flag
+│   └── predict.py          # Generate Kaggle submission from saved model
+├── weights/                # Trained models (gitignored)
 ├── submission.csv
 ├── requirements.txt
 └── README.md
@@ -27,57 +28,60 @@ titanic/
 ## Setup
 
 ```bash
-git clone https://github.com/G-Laluyashwanth/titanic.git
-cd titanic
+git clone https://github.com/G-Laluyashwanth/titanic-survival.git
+cd titanic-survival
 mkdir -p data/raw data/processed weights
 pip install -r requirements.txt
-# Download train.csv, test.csv, gender_submission.csv from Kaggle into data/raw/
+# Download train.csv, test.csv from Kaggle into data/raw/
 ```
 
 ## Usage
 
-Train the model:
+Train a model:
 ```bash
-python -m src.train
+python -m src.train --model random_forest
+python -m src.train --model logistic
 ```
 
-Generate Kaggle submission:
+Generate submission:
 ```bash
-python -m src.predict
+python -m src.predict --model random_forest
+python -m src.predict --model logistic
 ```
 
 ## Approach
 
-This project follows a structured end-to-end machine learning workflow:
+End-to-end scikit-learn workflow with two classification models compared on the same dataset.
 
-- **Data Cleaning**
-  - Handled missing values in `Age`, `Embarked`, and `Fare`
-  - Dropped less useful features like `Cabin` due to high missingness
+**Preprocessing pipeline:**
+- `SimpleImputer` (median) for numeric features
+- `SimpleImputer` (constant `"missing"`) + `OneHotEncoder` for categorical features
+- `StandardScaler` added for Logistic Regression (linear models need scaled features)
+- Dropped: `PassengerId`, `Name`, `Ticket`, `Cabin` (high cardinality / heavily missing)
 
-- **Feature Engineering**
-  - Extracted titles from passenger names (Mr, Mrs, Miss, etc.)
-  - Converted categorical variables using encoding techniques
-  - Created family-related features (e.g., family size)
+**Models compared:**
+- `RandomForestClassifier` (100 trees, no scaling needed)
+- `LogisticRegression` with L2 regularisation
 
-- **Exploratory Data Analysis (EDA)**
-  - Analyzed survival distribution across gender, class, and age
-  - Identified key patterns (e.g., higher survival rate for females and 1st class passengers)
-
-- **Pipeline Development**
-  - Built a reusable ML pipeline using `scikit-learn`
-  - Included preprocessing steps (imputation, encoding, scaling)
-  - Ensured clean and modular workflow for training and inference
-
-- **Modeling**
-  - Trained classification models (e.g., Logistic Regression / Random Forest)
-  - Evaluated performance using validation techniques
-
-- **Prediction**
-  - Generated predictions on test data
-  - Created submission file for Kaggle evaluation
+**Evaluation:**
+- Held-out validation split (20%)
+- Metrics: accuracy, precision, recall, F1, ROC-AUC, confusion matrix
+- Coefficient interpretation for Logistic Regression
 
 ## Results
 
-- **Kaggle Public Score:** `0.75837`
-- Built a complete end-to-end ML pipeline from data preprocessing to prediction
-- Established a strong baseline model for further improvements
+| Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
+|---|---|---|---|---|---|
+| Random Forest | 0.8212 | 0.7917 | 0.7703 | 0.7808 | 0.8944 |
+| Logistic Regression | 0.8101 | 0.7857 | 0.7432 | 0.7639 | 0.8824 |
+
+**Kaggle public score (Random Forest):** 0.75837
+
+**Key insight:** Logistic Regression had slightly lower accuracy but produced more interpretable coefficients. The strongest learned features were `Sex_male` (-1.33) and `Sex_female` (+1.32), confirming sex was the dominant survival factor — followed by passenger class.
+
+## Next Steps
+
+- [ ] Feature engineering: extract titles from `Name` (Mr/Mrs/Miss/Master), create `family_size` from SibSp + Parch, bin `Age`
+- [ ] Try gradient boosting (XGBoost / LightGBM)
+- [ ] Hyperparameter tuning with `RandomizedSearchCV`
+- [ ] Deploy best model as a FastAPI service
