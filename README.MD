@@ -74,6 +74,7 @@ End-to-end scikit-learn workflow with two classification models compared on the 
 |---|---|---|---|---|---|
 | Random Forest | 0.8212 | 0.7917 | 0.7703 | 0.7808 | 0.8944 |
 | Logistic Regression | 0.8101 | 0.7857 | 0.7432 | 0.7639 | 0.8824 |
+| XGBoost (tuned) | 0.8156 | 0.8154 | 0.7162 | 0.7626 | 0.8829 |
 
 **Kaggle public score (Random Forest):** 0.75837
 
