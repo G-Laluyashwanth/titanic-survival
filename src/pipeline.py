@@ -8,6 +8,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
+from xgboost import XGBClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -59,6 +60,20 @@ def build_pipeline(X, model_type="random_forest", random_state=42):
             n_estimators=100,
             random_state=random_state,
             n_jobs=-1,
+        )
+    elif model_type == "xgboost":
+        numeric_transformer = Pipeline(steps=[
+            ("impute", SimpleImputer(strategy="median")),
+        ])
+        classifier = XGBClassifier(
+            n_estimators=200,
+            learning_rate=0.05,
+            max_depth=3,
+            subsample=0.7,
+            colsample_bytree=0.7,
+            random_state=random_state,
+            n_jobs=-1,
+            eval_metrics="logloss",
         )
     else:
         raise ValueError(

@@ -45,15 +45,16 @@ def generate_submission(model_type="random_forest"):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Generate Titanic predictions")
+    parser = argparse.ArgumentParser(description="Train Titanic classifier")
     parser.add_argument(
         "--model",
         type=str,
         default="random_forest",
-        choices=["random_forest", "logistic"],
-        help="Which trained model to use (default: random_forest)",
+        choices=["random_forest", "logistic", "xgboost"],   # ← add xgboost
+        help="Which classifier to train (default: random_forest)",
     )
     return parser.parse_args()
+
 
 
 if __name__ == "__main__":

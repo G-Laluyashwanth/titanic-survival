@@ -83,7 +83,7 @@ def parse_args():
         "--model",
         type=str,
         default="random_forest",
-        choices=["random_forest", "logistic"],
+        choices=["random_forest", "logistic", "xgboost"],   # ← add xgboost
         help="Which classifier to train (default: random_forest)",
     )
     return parser.parse_args()
